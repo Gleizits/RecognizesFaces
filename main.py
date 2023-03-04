@@ -1,3 +1,4 @@
+import streamlit as st
 import face_recognition as fr
 import os
 import cv2
@@ -22,7 +23,6 @@ def unknown_image_encoded(img):
     encoding = fr.face_encodings(face)[0]
 
     return encoding
-
 
 def classify_face(im):
     
@@ -57,12 +57,13 @@ def classify_face(im):
             font = cv2.FONT_HERSHEY_DUPLEX
             cv2.putText(img, name, (left -20, bottom + 15), font, 1.0, (255, 255, 255), 2)
 
+    return img, face_names
 
-    while True:
+st.title("Face Recognition App")
 
-        cv2.imshow('Recognizes Faces', img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            return face_names 
-
-
-print(classify_face("test.jpg"))
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+if uploaded_file is not None:
+    image = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+    img, face_names = classify_face(image)
+    st.image(img, channels="BGR")
+    st.write("Face names:", face_names)
